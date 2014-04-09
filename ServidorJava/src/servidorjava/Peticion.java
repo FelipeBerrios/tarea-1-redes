@@ -22,7 +22,7 @@ public class Peticion extends Thread
   
   Peticion(Socket clienteExt)
   {
-    this.cliente = clienteExt;
+    cliente = clienteExt;
     setPriority(4);
   }
   
@@ -31,23 +31,12 @@ public class Peticion extends Thread
     MensajeServidor("Procesando conexion");
     try
     {
-      BufferedReader entrada = new BufferedReader(new InputStreamReader(this.cliente.getInputStream()));
-      this.salida = new PrintWriter(new OutputStreamWriter(this.cliente.getOutputStream(), "8859_1"), true);
+      BufferedReader entrada = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
+      salida = new PrintWriter(new OutputStreamWriter(cliente.getOutputStream(), "8859_1"), true);
       
 
       String cadena = "";
-      
-
-
-
-
-
-
-
-
-
-
-
+     
       int i = 0;
       do
       {
@@ -63,7 +52,7 @@ public class Peticion extends Thread
           if ((st.countTokens() >= 2) && (st.nextToken().equals("GET"))) {
             RetornarArchivo(st.nextToken());
           } else {
-            this.salida.println("400 Petición Incorrecta");
+            salida.println("400 Petición Incorrecta");
           }
         }
         if (cadena == null) {
@@ -73,8 +62,8 @@ public class Peticion extends Thread
     }
     catch (Exception e)
     {
-      this.salida.println("HTTP/1.1 400 Not Found");
-      this.salida.close();
+      salida.println("HTTP/1.1 400 Not Found");
+      salida.close();
     }
     MensajeServidor("Peticion Finalizada");
   }
@@ -88,39 +77,41 @@ public class Peticion extends Thread
     if ((archivo.endsWith("/")) || (archivo.equals(""))) {
       archivo = archivo + "index.html";
     }
+    
+    String basePath = new File("").getAbsolutePath();
+    System.out.println(basePath);
     try
     {
-      URL url = getClass().getResource(archivo);
-      System.out.println(url.getPath());
-      File mifichero = new File(url.getPath());
+      System.out.println(archivo);
+      File mifichero = new File(archivo);
       if (mifichero.exists())
       {
         if (archivo.endsWith("html"))
         {
-          this.salida.println("HTTP/1.1 200 ok");
+          salida.println("HTTP/1.1 200 ok");
           
 
-          this.salida.println("Content-Type: text/html");
-          this.salida.println("Content-Length: " + mifichero.length());
-          this.salida.println("\n");
+          salida.println("Content-Type: text/html");
+          salida.println("Content-Length: " + mifichero.length());
+          salida.println("\n");
         }
         else if (archivo.endsWith("css"))
         {
-          this.salida.println("HTTP/1.1 200 ok");
+          salida.println("HTTP/1.1 200 ok");
           
 
-          this.salida.println("Content-Type: text/css");
-          this.salida.println("Content-Length: " + mifichero.length());
-          this.salida.println("\n");
+          salida.println("Content-Type: text/css");
+          salida.println("Content-Length: " + mifichero.length());
+          salida.println("\n");
         }
         else if (archivo.endsWith("js"))
         {
-          this.salida.println("HTTP/1.1 200 ok");
+          salida.println("HTTP/1.1 200 ok");
           
 
-          this.salida.println("Content-Type: application/javascript");
-          this.salida.println("Content-Length: " + mifichero.length());
-          this.salida.println("\n");
+          salida.println("Content-Type: application/javascript");
+          salida.println("Content-Length: " + mifichero.length());
+          salida.println("\n");
         }
         BufferedReader ficheroLocal = new BufferedReader(new FileReader(mifichero));
         
@@ -130,23 +121,24 @@ public class Peticion extends Thread
         {
           linea = ficheroLocal.readLine();
           if (linea != null) {
-            this.salida.println(linea);
+            salida.println(linea);
           }
         } while (linea != null);
         MensajeServidor("Archivo enviado");
         
         ficheroLocal.close();
-        this.salida.close();
-        this.cliente.close();
+        salida.close();
+        cliente.close();
       }
       else
       {
         MensajeServidor("No encuentro el archivo " + mifichero.toString());
-        this.cliente.close();
+        cliente.close();
       }
     }
     catch (Exception e)
     {
+        e.printStackTrace();
       MensajeServidor("Error al retornar archivo");
     }
   }
