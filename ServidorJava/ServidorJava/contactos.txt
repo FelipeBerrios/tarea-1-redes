@@ -1,0 +1,3 @@
+Nombre			Direccion IP			Puerto
+Felipe Araya - 			2345 - 			45
+xavi - 			9999000 - 			78
