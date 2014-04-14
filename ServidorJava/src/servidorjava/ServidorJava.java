@@ -28,19 +28,19 @@ public class ServidorJava
         }
         else{
             //Si no existe, se crea uno nuevo
-            FileWriter archivoContactos = null;
-            PrintWriter pw = null;
+            FileWriter archivoContactos ;
+            PrintWriter pw ;
             
             archivoContactos = new FileWriter("contactos.txt");
             pw = new PrintWriter(archivoContactos);
-            pw.println("Nombre\t\tDireccion IP\t\tPuerto");
+            pw.println("Nombre\t\t\tDireccion IP\t\t\tPuerto");
             pw.close();
         }
        
         
       
     }
-    catch (Exception e) {
+    catch (IOException e) {
             e.printStackTrace();
     }
     //Se instancia el servidor y luego se inicia 
@@ -66,7 +66,7 @@ public class ServidorJava
         pCliente.start();
       }
     }
-    catch (Exception e)
+    catch (IOException e)
     {
       MensajeServidor("Error en servidor\n" + e.toString()); //Si ocurre algun problema al instanciar el servidor se lanza este mensaje de error
     }
