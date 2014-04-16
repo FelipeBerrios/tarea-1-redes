@@ -25,7 +25,7 @@ public class Peticion extends Thread
   }
   
   // Metodo run que inicia con el start(), representa un thread.
-  public void run()
+   public void run()
   {
     MensajeServidor("Procesando conexion");
     try
@@ -36,7 +36,7 @@ public class Peticion extends Thread
       salida = new PrintWriter(new OutputStreamWriter(cliente.getOutputStream(), "8859_1"), true);
       
 
-      String cadena = "";
+      String cadena="" ;
       // Con i se puede reconocer la primera linea, que indica el metodo y version del protocolo
       int i = 0;
       do
@@ -45,7 +45,7 @@ public class Peticion extends Thread
         cadena = entrada.readLine();
         if (cadena != null) {
           MensajeServidor("--" + cadena);
-        }
+        
         // Si es la primera linea se reconoce que metodo es y segun esto se maneja la peticion.
         if (i == 0)
         {
@@ -66,15 +66,17 @@ public class Peticion extends Thread
             salida.println("HTTP/1.1 400 Not Found");
           }
         }
+      }
         
       } while (cadena != null && cadena.length() != 0);
     }
-    catch (Exception e)
+    catch (IOException| NullPointerException e)
     {
       //En el caso que no se pueda establecer conexion con la salida, se retorna not found, en teoria debiera ser 501.
       salida.println("HTTP/1.1 400 Not Found");
       salida.close();
     }
+    
     //Si todo va correctamente, se termina la peticion y se finaliza.
     MensajeServidor("Peticion Finalizada");
     salida.close();
@@ -93,11 +95,38 @@ public class Peticion extends Thread
     }
     //Revisamos la ruta actual del proyecto para ver si el archivo existe.
     String basePath = new File("").getAbsolutePath();
-    System.out.println(basePath);
+    String nombres="";
     try
     {
+      // A continuacion se obtienen los nombres en caso de que el archivo a mostrar sea el de contactos
+        if(archivo.startsWith("contactos.html")){
+              
+              String lineatxt="";
+              File archivotxt = new File ("contactos.txt");
+              FileReader fr = new FileReader (archivotxt);
+              BufferedReader br = new BufferedReader(fr);
+              int cont1=1;
+              do
+                {
+                  lineatxt = br.readLine();
+                  if(cont1==1){
+                      cont1++;
+                      continue;
+                  }
+                  //Se almacenan todos los nombres en un gran string 
+                  if(lineatxt!=null){
+                  StringTokenizer st = new StringTokenizer(lineatxt,"-");
+                  nombres +="-"+st.nextToken();
+                  cont1++;
+                  }
+                  
+                } while (lineatxt != null);
+              fr.close();
+              br.close();
+              System.out.println(nombres);
+          }
       // Se instancia el archivo fisico para saber su largo.
-      File archivofisico = new File(archivo);
+      File archivofisico = new File(basePath+"/"+archivo);
       if (archivofisico.exists())
       {
         /*A continuacion se diferencian las distintas extensiones, para saber que devolver
@@ -135,18 +164,31 @@ public class Peticion extends Thread
         BufferedReader archivoL = new BufferedReader(new FileReader(archivofisico));
         
 
-        String linea = "";
+        String linea="" ;
+        String lista="<ul class=\" nav nav-sidebar\">";
         //Aqui se va imprimiendo en el cuerpo del mensaje de respuesta.
         do
         {
+          
           linea = archivoL.readLine();
+          
           if (linea != null) {
-            salida.println(linea);
+              salida.println(linea);
+              //Si el archivo es contactos, se crea una lista que se mostrara,
+              //a partir del archivo contactos.html que esta pre creado con la lista.
+              if(archivo.startsWith("contactos.html")){
+                if(linea.indexOf (lista) != -1){
+                    String actual="";
+                    StringTokenizer st = new StringTokenizer(nombres,"-");
+                    while(st.hasMoreTokens()){
+                        salida.println("<li ><a href=\"#\">"+st.nextToken()+"</a></li>");
+                    }
+                }
+              }  
           }
         } while (linea != null);
         MensajeServidor("Archivo enviado");
         
-        archivoL.close();
         cliente.close();
       }
       else
@@ -155,35 +197,33 @@ public class Peticion extends Thread
         cliente.close();
       }
     }
-    catch (Exception e)
+    catch (IOException| NullPointerException e)
     {
-        e.printStackTrace();
       MensajeServidor("Error al retornar archivo");
     }
   }
   
   //Esta funcion es especifica para el manejo del POST
   public void ManejoPost(BufferedReader mensaje ,String archivo){
-    System.out.println("entre al post LOL");
     /*Mediante los metodos de lectura, no se pueden leer las variables
     del request en el post, hay que ver el content.length y luego leer los bytes especificos
     esta es una de las formas para reconocer las variables en el mensaje.
     */
     int contentLength = -1; //Se inicia el largo en 1
     String contentL = "Content-Length: "; //cuando encuentre esta secuencia en el mensaje, lo partira para obtener los bytes.
-    String cadena = "";
+    String cadena="" ;
     try{
         do
           {
             cadena = mensaje.readLine();
             if (cadena != null) {
                MensajeServidor("--" + cadena);
+            
+                if (cadena.startsWith(contentL)) {
+                        //Aqui se almacenan los bytes del largo del archivo.
+                        contentLength = Integer.parseInt(cadena.substring(contentL.length()));
+                }
             }
-            if (cadena.startsWith(contentL)) {
-                    //Aqui se almacenan los bytes del largo del archivo.
-                    contentLength = Integer.parseInt(cadena.substring(contentL.length()));
-            }
-
 
           } while (cadena != null && cadena.length() != 0);
         
@@ -193,8 +233,8 @@ public class Peticion extends Thread
         mensaje.read(content);
         String cadvariables=new String(content);
         //Se inician las variables de escritura de archivos.
-        FileWriter archivoContactos= null;
-        PrintWriter pw = null;
+        FileWriter archivoContactos;
+        PrintWriter pw ;
         archivoContactos = new FileWriter("contactos.txt",true);
         pw = new PrintWriter(archivoContactos);
         int i;
@@ -205,16 +245,17 @@ public class Peticion extends Thread
         for(i=0;i<arrayvariables.length;i++){
             //Ahora se separan en parejas variable-valor
             String[] par=arrayvariables[i].split("=");
+            par[1]=par[1].replace("+"," ");
             // se reconocen 3 casos: 0 para nombre; 1 para ip y 2 para puerto.
             switch (i){
                 case 0:
-                    pw.print(par[1]);
+                    pw.print(par[1]+" - ");
                     break;
                 case 1:
-                    pw.print("\t\t"+par[1]);
+                    pw.print("\t\t\t"+par[1]+" - ");
                     break;
                 case 2:
-                    pw.println("\t\t"+par[1]);
+                    pw.println("\t\t\t"+par[1]);
                     break;
             }
                     
@@ -225,13 +266,17 @@ public class Peticion extends Thread
         
     
     }
-    catch (Exception e)
+    catch (IOException| NullPointerException e)
     {
         //Si no se reconocio el mensaje not found.
       salida.println("HTTP/1.1 400 Not Found");
     }
     //Finalmente retornamos el archivo que venia en la request de POST.
     RetornarArchivo(archivo);
+  }
+  
+  public void GenerarContactos(String archivo){
+      
   }
   
  }

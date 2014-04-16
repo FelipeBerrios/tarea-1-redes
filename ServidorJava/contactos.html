@@ -4,13 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Inicio</title>
-    <style type="text/css">
-    .jumbotron{
-      margin-top: 100px;
-    }
+    <title>Contacto</title>
 
-    </style>
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
@@ -20,6 +15,60 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+        
+          .sub-header {
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+          }
+
+          .sidebar {
+            display: none;
+          }
+          @media (min-width: 768px) {
+            .sidebar {
+              position: fixed;
+              top: 51px;
+              bottom: 0;
+              left: 0;
+              z-index: 1000;
+              display: block;
+              padding: 20px;
+              overflow-x: hidden;
+              overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+              background-color: #f5f5f5;
+              border-right: 1px solid #eee;
+            }
+          }
+
+          .nav-sidebar {
+            margin-right: -21px; /* 20px padding + 1px border */
+            margin-bottom: 20px;
+            margin-left: -20px;
+          }
+          .nav-sidebar > li > a {
+            padding-right: 20px;
+            padding-left: 20px;
+          }
+          .nav-sidebar > .active > a {
+            color: #fff;
+            background-color: #428bca;
+          }
+
+          .main {
+            padding: 20px;
+          }
+          @media (min-width: 768px) {
+            .main {
+              padding-right: 40px;
+              padding-left: 40px;
+            }
+          }
+          .main .page-header {
+            margin-top: 0;
+          }
+
+    </style>
   </head>
   <body>
     <div class="navbar navbar-inverse navbar-static-top" role="navigation">
@@ -42,17 +91,24 @@
         </div><!--/.nav-collapse -->
       </div>
     </div>
-    <div class="container">
-      <div class="jumbotron">
-        <h1>Bienvenido al sistema de contactos</h1>
-      <p style="margin-left: 40%">
-        <a href="http://localhost:8000/agregar.html" class="btn btn-primary btn-lg " role="button">Agregar</a>
-        <a href="http://localhost:8000/contactos.html" class="btn btn-primary btn-lg " role="button">Ver contactos</a>
-      <p>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class=" nav nav-sidebar">
+            
+          </ul>
+
+          <a href="http://localhost:8000/agregar.html" class="btn btn-success btn-lg " role="button" style="margin-top: 50px">Agregar contacto</a>
+
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h1 class="page-header">Contacto</h1>
+        </div>
+      </div>
 
     </div>
 
-    </div>
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
