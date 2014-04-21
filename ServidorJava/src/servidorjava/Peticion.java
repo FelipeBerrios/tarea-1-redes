@@ -8,7 +8,7 @@ import java.util.*;
 //la clase Peticion extiende a la clase thread
 public class Peticion extends Thread
 {
-    //Denuevo se crea la clase mensaje
+    //Denuevo se crea la clase mensaje, esta vez para ver que thread lleva la ejecucion
   void MensajeServidor(String mensaje)
   {
     System.out.println(currentThread().toString() + " - " + mensaje);
@@ -275,9 +275,7 @@ public class Peticion extends Thread
     RetornarArchivo(archivo);
   }
   
-  public void GenerarContactos(String archivo){
-      
-  }
+
   
  }
 
