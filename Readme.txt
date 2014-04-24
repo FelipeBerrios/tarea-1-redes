@@ -7,3 +7,6 @@ Para Linux hacer pull y ubicarse en el directorio TareaMake/servidorjava y ejecu
 Con  el comando "java ServidorJava".
 
 En este caso se utilizó el puerto 8000, entonces para abrir utilizar http://localhost:8000 en la dirección del navegador.
+
+Felipe Berrios Toloza 201173586-2
+Felipe Araya Barrera 201173501-3
